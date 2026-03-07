@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - AI Chat</title>
+    <style>
+        /* --- CSS STYLING --- */
+        
+        :root {
+            --primary-color: #10a37f;
+            --bg-color: #f0f2f5;
+            --text-color: #333;
+            --error-color: #e74c3c;
+            --success-color: #2ecc71;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Main Container */
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .logo h1 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .logo p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-color);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border 0.3s, box-shadow 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(16, 163, 127, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #aaa;
+        }
+
+        /* Remember me & Forgot password row */
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary-color);
+        }
+
+        .forgot-password a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background-color: #0d8a6e;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .divider {
+            text-align: center;
+            margin: 25px 0;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 100%;
+            height: 1px;
+            background: #eee;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 15px;
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .social-login {
+            display: flex;
+            gap: 10px;
+        }
+
+        .social-btn {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: #666;
+            transition: background 0.2s, border 0.2s;
+        }
+
+        .social-btn:hover {
+            background: #f9f9f9;
+            border-color: #ccc;
+        }
+
+        .switch-link {
+            text-align: center;
+            margin-top: 25px;
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .switch-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .switch-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Alert Messages */
+        .alert {
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.error {
+            background-color: #fde8e8;
+            color: var(--error-color);
+            border: 1px solid #fcc;
+        }
+
+        /* Back to home link */
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: #888;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back-link a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Loading spinner */
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #ffffff;
+            border-top: 3px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .flash-message {
+            background-color: #d4edda;
+            color: red;
+            padding: 10px;
+            text-align: center;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="logo">
+            <h1>🤖 AI Chat</h1>
+            <p>Welcome back! Please login</p>
+        </div>
+
+        <!-- Error Message -->
+        <!-- Error/Success Message -->
+         {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+
+        <form action="/submit" method="post">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" name="email" placeholder="Enter your email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" name="password" placeholder="Enter your password" required>
+            </div>
+
+            <div class="form-options">
+                <div class="remember-me">
+                    <input type="checkbox" id="rememberMe">
+                    <label for="rememberMe">Remember me</label>
+                </div>
+                <div class="forgot-password">
+                    <a href="#" onclick="showForgotMessage()">Forgot password?</a>
+                </div>
+            </div>
+
+            <button type="submit" class="btn" id="loginBtn">
+                <span class="btn-text">Login</span>
+                <div class="spinner"></div>
+            </button>
+        </form>
+
+        <div class="divider"><span>OR</span></div>
+
+        <div class="social-login">
+            <button class="social-btn" onclick="socialLogin('google')">
+                🔵 Google
+            </button>
+            <button class="social-btn" onclick="socialLogin('facebook')">
+                🟦 Facebook
+            </button>
+        </div>
+
+        <p class="switch-link">
+            Don't have an account? <a href="/signup">Sign up here</a>
+        </p>
+
+        <div class="back-link">
+            <a href="chat.html">← Back to Chat</a>
+        </div>
+    </div>
+    <script>
+         function showForgotMessage() {
+            alert('Please contact support to reset your password.\n\nThis is a demo feature.');
+            window.location.href = '/forgotPassword';
+        }
+
+        function socialLogin(provider) {
+            alert(`Social login with ${provider} is not available in this demo version.`);
+        }
+
+        // Check if already logged in
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentUser = localStorage.getItem('currentUser') || sessionStorage.getItem('currentUser');
+            if (currentUser) {
+                window.location.href = '/';
+            }
+        });
+              
+    </script>
+
+    <!-- <script>
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            // Get form values
+            const email = document.getElementById('email').value.trim().toLowerCase();
+            const password = document.getElementById('password').value;
+            const alertEl = document.getElementById('alertMessage');
+            const loginBtn = document.getElementById('loginBtn');
+            const btnText = document.querySelector('.btn-text');
+            const spinner = document.querySelector('.spinner');
+
+            // Reset alert
+            alertEl.style.display = 'none';
+
+            // Show loading state
+            btnText.style.display = 'none';
+            spinner.style.display = 'block';
+            loginBtn.disabled = true;
+
+            // Simulate network delay
+            setTimeout(() => {
+                // Get existing users from localStorage
+                let users = JSON.parse(localStorage.getItem('users')) || [];
+
+                // Find user with matching credentials
+                const user = users.find(u => u.email === email && u.password === password);
+
+                if (user) {
+                    // Login successful
+                    
+                    // Check if "Remember me" is checked
+                    if (document.getElementById('rememberMe').checked) {
+                        localStorage.setItem('currentUser', JSON.stringify(user));
+                    } else {
+                        // Session storage for session-only login
+                        sessionStorage.setItem('currentUser', JSON.stringify(user));
+                    }
+
+                    // Redirect to chat page
+                    window.location.href = 'index.html';
+                } else {
+                    // Login failed
+                    btnText.style.display = 'block';
+                    spinner.style.display = 'none';
+                    loginBtn.disabled = false;
+                    
+                    showAlert('Invalid email or password! Please try again.');
+                }
+            }, 1000); // 1 second delay
+        }
+
+        function showAlert(message) {
+            const alertEl = document.getElementById('alertMessage');
+            alertEl.textContent = message;
+            alertEl.style.display = 'block';
+        }
+
+        function showForgotMessage() {
+            alert('Please contact support to reset your password.\n\nThis is a demo feature.');
+        }
+
+        function socialLogin(provider) {
+            alert(`Social login with ${provider} is not available in this demo version.`);
+        }
+
+        // Check if already logged in
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentUser = localStorage.getItem('currentUser') || sessionStorage.getItem('currentUser');
+            if (currentUser) {
+                window.location.href = 'index.html';
+            }
+        });
+    </script> -->
+
+</body>
+</html>

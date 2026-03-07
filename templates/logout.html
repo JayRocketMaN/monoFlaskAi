@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logged out - AI Chat</title>
+    <style>
+        /* --- CSS STYLING --- */
+        
+        :root {
+            --primary-color: #10a37f;
+            --bg-color: #f0f2f5;
+            --text-color: #333;
+            --error-color: #e74c3c;
+            }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Main Container */
+        .logout-container {
+            background: white;
+            padding: 50px 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+
+        .logout-icon {
+            width: 80px;
+            height: 80px;
+            background: #f0f2f5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 2.5rem;
+        }
+
+        .logout-container h1 {
+            color: var(--text-color);
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .logout-container p {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .user-display {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .user-display .user-label {
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .user-display .user-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+                .btn-login {
+            background-color: var(--green-500);
+            color: green;
+        }
+
+        .btn-login:hover {
+            background-color: var(--green-600);
+        }
+
+        .btn-login:active {
+            background-color: var(--green-700);
+        }
+            
+
+        .btn-cancel {
+            background-color: green;
+            color: var(--text-color);
+        }
+
+        .btn-cancel:hover {
+            background-color: #ddd;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .auto-logout-notice {
+            margin-top: 25px;
+            padding: 15px;
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            border-radius: 8px;
+            color: #856404;
+            font-size: 0.9rem;
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.9);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="logout-container">
+        <div class="logout-icon">
+            👋
+        </div>
+        
+        <h1>You are currently logged out</h1>
+        <p>Log in to continue chatting.</p>
+
+        <div class="user-display">
+            <div class="user-label">Logged out from</div>
+            <div class="user-name" id="userName">User</div>
+        </div>
+
+        <div class="btn-group">
+            <!-- <button class="btn btn-cancel" onclick="cancelLogout()">Cancel</button> -->
+            <button class="btn btn-logout" onclick="confirmLogin()">Login</button>
+        </div>
+
+        <div class="auto-logout-notice" id="autoNotice" style="display: none;">
+            ⏰ Session expired. Please log in again.
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <p>Logging out...</p>
+    </div>
+    <script>
+        function confirmLogin() {
+            window.location.href = '/login';
+        }
+    </script>
+
+    <!-- <script>
+        // Check URL parameters for auto-logout reason
+        const urlParams = new URLSearchParams(window.location.search);
+        const reason = urlParams.get('reason');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get current user
+            const currentUser = localStorage.getItem('currentUser') || sessionStorage.getItem('currentUser');
+            
+            if (currentUser) {
+                const user = JSON.parse(currentUser);
+                document.getElementById('userName').textContent = user.fullname || user.username || user.email;
+            } else {
+                // No user logged in, redirect to login
+                window.location.href = 'login.html';
+            }
+
+            // Check if this is an auto-logout (session expired)
+            if (reason === 'expired') {
+                document.getElementById('autoNotice').style.display = 'block';
+            }
+        });
+
+        function confirmLogout() {
+            // Show loading
+            document.getElementById('loadingOverlay').style.display = 'flex';
+
+            // Clear session
+            localStorage.removeItem('currentUser');
+            sessionStorage.removeItem('currentUser');
+
+            // Redirect after brief delay
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 1000);
+        }
+
+        
+
+        // Logout function to be called from other pages
+        function logoutUser() {
+            localStorage.removeItem('currentUser');
+            sessionStorage.removeItem('currentUser');
+            window.location.href = 'logout.html';
+        }
+    </script> -->
+
+</body>
+</html>

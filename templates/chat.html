@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat Interface</title>
+    <style>
+        :root {
+            --primary-color: #10a37f; /* AI Green */
+            --bg-color: #f0f2f5;
+            --chat-bg: #ffffff;
+            --user-msg-bg: #10a37f;
+            --ai-msg-bg: #e9e9e9;
+            --text-color: #333;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Main Chat Container */
+        .chat-container {
+            width: 100%;
+            max-width: 800px;
+            height: 90vh;
+            background-color: var(--chat-bg);
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #fff;
+        }
+
+        .chat-header h2 {
+            font-size: 1.2rem;
+            color: var(--text-color);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        /* Update your existing chat-header */
+.chat-header {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between; /* Pushes logout button to the right */
+    align-items: center;
+    background: #fff;
+}
+
+/* Add this wrapper for the title and dot */
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Add styles for the Logout Button */
+.logout-btn {
+    padding: 8px 16px;
+    background-color: #ff4757; /* A nice, subtle red */
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.logout-btn:hover {
+    background-color: #ff6b81;
+}
+
+        /* Message Area */
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            scroll-behavior: smooth;
+        }
+
+        /* Message Bubbles */
+        .message {
+            max-width: 75%;
+            padding: 12px 18px;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background-color: var(--user-msg-bg);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.ai {
+            align-self: flex-start;
+            background-color: var(--ai-msg-bg);
+            color: var(--text-color);
+            border-bottom-left-radius: 4px;
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+            background: #fff;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ccc;
+            border-radius: 25px;
+            outline: none;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+        }
+
+        button {
+            padding: 12px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: #0d8a6e;
+        }
+
+        /* Loading Animation */
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        <div class="chat-header">
+    <div class="header-left">
+        <div class="status-dot"></div>
+        <h2>AI ChatBox</h2>
+    </div>
+    <!-- The new Logout Button -->
+    <button class="logout-btn" onclick="logout()">Logout</button>
+</div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <!-- Initial AI Message -->
+            <div class="message ai">
+                Hello! I am your AI assistant. How can I help you today?
+            </div>
+        </div>
+
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="Type your message here...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+    <script>
+    // --- JAVASCRIPT LOGIC ---
+
+    const chatMessages = document.getElementById('chatMessages');
+ 
+    function addMessage(sender, text) {
+        // Create a single div matching your CSS structure
+        const messageElement = document.createElement('div');
+        
+        // Add the 'message' class, and either the 'user' or 'ai' class
+        messageElement.classList.add('message', sender);
+        messageElement.textContent = text;
+
+        chatMessages.appendChild(messageElement);
+        
+        // Scroll to the bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function sendMessage() {
+        const userInput = document.getElementById('userInput');
+        const message = userInput.value.trim();
+        if (!message) return;
+
+        // FIXED: Order is now correctly (sender, text)
+        addMessage('user', message);
+        userInput.value = '';
+
+        fetch('/response', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message }) // Fixed syntax
+        })
+        .then(response => response.json())
+        .then(data => {
+            const aiResponse = data.response;
+            addMessage('ai', aiResponse);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            addMessage('ai', 'Oops! Something went wrong.');
+        });
+    }
+
+    // BONUS: Allow user to press "Enter" on their keyboard to send
+    document.getElementById('userInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+    function logout() {
+    // make sure you want to logout
+    const confirmLogout = confirm("Are you sure you want to log out?");
+    
+    if (confirmLogout) {
+             window.location.href = '/logout';
+    }
+}
+</script>
+</body>
+</html>
+
+    <!-- <script>
+        // --- JAVASCRIPT LOGIC ---
+
+        const chatMessages = document.getElementById('chatMessages');
+     
+        function addMessage(sender, text){
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('chat-message', sender);
+
+            const avatarElement = document.createElement('div');
+            avatarElement.classList.add('avatar');
+            avatarElement.textContent = sender === 'user' ? 'U' : 'AI' ;
+
+            const textElement = document.createElement('div');
+            textElement.classList.add('message');
+            textElement.textContent = text;
+
+            messageElement.appendChild(avatarElement);
+            messageElement.appendChild(textElement);
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function sendMessage(){
+            const userInput = document.getElementById('userInput')
+            const message = userInput.value.trim();
+            if(!message) return;
+
+            addMessage('user', message );
+            userInput.value = '';
+
+            fetch('/response', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({message})
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const aiResponse = data.response;
+                    addMessage('ai', aiResponse);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    addMessage('ai', 'Oops! Something went wrong.')
+                });
+                
+        }
+        
+        </script> -->
+
+        <!-- // Allow pressing "Enter" to send
+        userInput.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        });
+
+        function sendMessage() {
+            const text = userInput.value.trim();
+            if (text === "") return;
+
+            // 1. Add User Message
+            addMessage(text, 'user');
+            userInput.value = '';
+
+            // 2. Simulate AI Thinking
+            setTimeout(() => {
+                const aiResponse = getAIResponse(text);
+                addMessage(aiResponse, 'ai');
+            }, 600); // 600ms delay for realism
+        }
+
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', sender);
+            messageDiv.textContent = text;
+            
+            chatMessages.appendChild(messageDiv);
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Simple Mock AI Logic (Replace this with an API call later)
+        function getAIResponse(input) {
+            input = input.toLowerCase();
+            
+            if (input.includes("hello") || input.includes("hi")) {
+                return "Hello there! How can I assist you?";
+            } else if (input.includes("how are you")) {
+                return "I'm just a computer program, but thanks for asking!";
+            } else if (input.includes("html") || input.includes("code")) {
+                return "I can help with code! Here is a simple HTML example: <br><code>&lt;h1&gt;Hello World&lt;/h1&gt;</code>";
+            } else {
+                return "I'm a simple demo bot. In a real application, this would connect to an API like OpenAI or Claude.";
+            }
+        }
+    </script>
+
+</body>
+</html> -->
