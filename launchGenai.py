@@ -22,7 +22,8 @@ def generate(message):
             response = chat.send_message(message)
             return (response.text)
     except:
-            return("this service is currently unavailable")
+           print(f"GEMINI ERROR: {response.status_code} - {response.text}") 
+           return("this service is currently unavailable")
 
 if __name__ == "__main__":
 
