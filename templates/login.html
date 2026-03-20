@@ -165,6 +165,64 @@
         .forgot-password a:hover {
             text-decoration: underline;
         }
+        /* --- DIVIDER --- */
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 25px 0;
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        /* This draws the two lines on the left and right */
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #ddd; /* The color of the line */
+        }
+
+        /* This adds breathing room around the word "OR" */
+        .divider span {
+            padding: 0 15px;
+        }
+                
+      .submit-btn {
+        width: 100%;
+        padding: 14px; /* Slightly thicker button gives the text room to breathe */
+        background-color: var(--primary-color);
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        
+            /* --- Typography Beautification --- */
+            font-size: 1.05rem; /* Slightly larger text */
+            font-weight: 700; /* Extra bold text */
+            letter-spacing: 1px; /* Adds elegant space between the letters */
+            text-transform: uppercase; /* Makes it ALL CAPS for a strong call-to-action */
+            font-family: inherit;
+            /* -------------------------------- */
+            
+            cursor: pointer;
+            transition: all 0.3s ease; /* Smooth transition for all effects */
+            margin-top: 10px;
+            box-shadow: 0 4px 10px rgba(16, 163, 127, 0.25); /* Soft glowing green shadow */
+        }
+
+        /* Add a beautiful hover effect */
+        .submit-btn:hover {
+            background-color: rgba(0, 128, 38, 0.667);
+            box-shadow: 0 6px 15px rgba(16, 163, 18, 0.169); /* Shadow grows on hover */
+            transform: translateY(-2px); /* Button physically lifts up slightly */
+        }
+
+        /* A click effect so it feels responsive */
+        .submit-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 5px rgba(16, 163, 50, 0.352);
+        }
+
 /* 
         .btn {
             width: 100%;
@@ -186,29 +244,6 @@
 
         .btn:active {
             transform: scale(0.98);
-        }
-
-        .divider {
-            text-align: center;
-            margin: 25px 0;
-            position: relative;
-        }
-
-        .divider::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 50%;
-            width: 100%;
-            height: 1px;
-            background: #eee;
-        }
-
-        .divider span {
-            background: white;
-            padding: 0 15px;
-            color: #888;
-            font-size: 0.9rem;
         }
 
         .social-login {
@@ -302,14 +337,22 @@
             100% { transform: rotate(360deg); }
         }
         .flash-message {
-            background-color: #d4edda;
-            color: red;
             padding: 10px;
-            text-align: center;
-            border-radius: 5px;
-            margin-bottom: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
             font-size: 0.9rem;
-            display: block;
+            font-weight: 600;
+            text-align: center;
+        }
+        .flash-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .flash-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
         }
     </style>
 </head>
@@ -321,7 +364,7 @@
             <p>Welcome back! Please login</p>
         </div>
 
-        <!-- Error Message -->
+        
         <!-- Error/Success Message -->
          {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -333,18 +376,31 @@
             {% endif %}
         {% endwith %}
 
-        <form action="/submit" method="post">
-            <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" name="email" placeholder="Enter your email" required>
-            </div>
-
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" name="password" placeholder="Enter your password" required>
-            </div> 
-
-            <div class="form-options">
+        <form id="contact-form" action="{{ url_for('submit') }}" method="POST" novalidate >
+                {{ form.hidden_tag() }}
+                <div class='form-group'>
+                    {{form.email.label}}<br>
+                    {{form.email(class="form-control", placeholder="Your Email")}}
+                    {% if form.email.errors %}
+                        {% for error in form.email.errors %}
+                            <span class="error" style="color: red; font-size: 0.85rem;"> {{error}}</span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div class='form-group'>
+                    {{form.password.label}}<br>
+                    {{form.password(class="form-control", placeholder="Your Password")}}
+                    {% if form.password.errors %}
+                        {% for error in form.password.errors %}
+                            <span class="error" style="color: red; font-size: 0.85rem;"> {{error}}</span>
+                        {% endfor %}
+                    {% endif %}
+                    </div>
+                <div class='form-group' style="margin-top: 25px; text-align: center;">
+                   {{ form.submit(class="submit-btn") }}
+                </div>
+        </form>
+        <div class="form-options">
                 <div class="remember-me">
                     <input type="checkbox" id="rememberMe">
                     <label for="rememberMe">Remember me</label>
@@ -354,13 +410,16 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn" id="loginBtn">
+            <!-- <button type="submit" class="btn" id="loginBtn">
                 <span class="btn-text">Login</span>
                 <div class="spinner"></div>
             </button>
-        </form>
+        </form> -->
 
-        <div class="divider" style="text-align: center;"><span>---OR---</span></div>
+        <!-- Divider -->
+        <div class="divider">
+            <span>OR</span>
+        </div>
 
          <div class="social-login">
              <!-- <a href="/getIn/google" class="btn google-btn">Sign in with Google</a>
@@ -402,7 +461,7 @@
     </div>
     <script>
          function showForgotMessage() {
-            alert('Please contact support to reset your password.\n\nThis is a demo feature.');
+            //alert('Please contact support to reset your password.\n\nThis is a demo feature.');
             window.location.href = '/forgotPassword';
         }
 

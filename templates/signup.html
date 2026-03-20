@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chat - Auth System</title>
+    <title>Sign Up - AI ChatBox</title>
     <style>
-        /* --- CSS STYLING --- */
-        
+        /* --- Color Palette & Base Styles --- */
         :root {
             --primary-color: #10a37f;
+            --primary-hover: #0d8a6e;
             --bg-color: #f0f2f5;
-            --text-color: #333;
-            --error-color: #e74c3c;
-            --success-color: #2ecc71;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --border-color: #dddddd;
         }
 
         * {
@@ -31,6 +32,7 @@
             padding: 20px;
         }
 
+       
         /* Main Container */
         .signup-container {
             background: white;
@@ -57,7 +59,29 @@
             margin-bottom: 30px;
         }
 
-        .form-group {
+
+        /* --- Flash Messages --- */
+        
+        .flash-message {
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        .flash-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .flash-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+          .form-group {
             margin-bottom: 20px;
         }
 
@@ -95,119 +119,127 @@
             margin-top: 5px;
         }
 
-        .btn {
-            width: 100%;
-            padding: 14px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 8px;
+        .submit-btn {
+        width: 100%;
+        padding: 14px; /* Slightly thicker button gives the text room to breathe */
+        background-color: var(--primary-color);
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        
+            /* --- Typography Beautification --- */
+            font-size: 1.05rem; /* Slightly larger text */
+            font-weight: 700; /* Extra bold text */
+            letter-spacing: 1px; /* Adds elegant space between the letters */
+            text-transform: uppercase; /* Makes it ALL CAPS for a strong call-to-action */
+            font-family: inherit;
+            /* -------------------------------- */
+            
             cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: background 0.2s, transform 0.1s;
+            transition: all 0.3s ease; /* Smooth transition for all effects */
             margin-top: 10px;
+            box-shadow: 0 4px 10px rgba(16, 163, 127, 0.25); /* Soft glowing green shadow */
         }
 
-        .btn:hover {
-            background-color: #0d8a6e;
+        /* Add a beautiful hover effect */
+        .submit-btn:hover {
+            background-color: var(--primary-hover);
+            box-shadow: 0 6px 15px rgba(16, 163, 127, 0.4); /* Shadow grows on hover */
+            transform: translateY(-2px); /* Button physically lifts up slightly */
         }
 
-        .btn:active {
-            transform: scale(0.98);
+        /* A click effect so it feels responsive */
+        .submit-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 5px rgba(16, 163, 127, 0.2);
         }
-
-        .divider {
+        /* --- Social Login Divider --- */
+        .auth-divider {
+            display: flex;
+            align-items: center;
             text-align: center;
             margin: 25px 0;
-            position: relative;
-        }
-
-        .divider::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 50%;
-            width: 100%;
-            height: 1px;
-            background: #eee;
-        }
-
-        .divider span {
-            background: white;
-            padding: 0 15px;
             color: #888;
-            position: relative;
             font-size: 0.9rem;
         }
 
-        .switch-link {
-            text-align: center;
-            margin-top: 20px;
-            color: #666;
-            font-size: 0.95rem;
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .switch-link a {
+        .auth-divider span {
+            padding: 0 10px;
+        }
+
+        /* --- Social Buttons --- */
+        .social-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            gap: 10px;
+        }
+
+        .google-btn {
+            background-color: #ffffff;
+            color: #333333;
+            border: 1px solid #cccccc;
+        }
+
+        .google-btn:hover {
+            background-color: #f5f5f5;
+            border-color: #bbbbbb;
+        }
+
+        .facebook-btn {
+            background-color: #1877F2;
+            color: #ffffff;
+            border: 1px solid #1877F2;
+        }
+
+        .facebook-btn:hover {
+            background-color: #166fe5;
+        }
+
+        /* --- Footer Link --- */
+        .auth-footer {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        .auth-footer a {
             color: var(--primary-color);
             text-decoration: none;
             font-weight: 600;
         }
 
-        .switch-link a:hover {
+        .auth-footer a:hover {
             text-decoration: underline;
         }
-
-        /* Alert Messages */
-        .alert {
-            padding: 12px 15px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            margin-bottom: 20px;
-            display: none;
-        }
-
-        .alert.error {
-            background-color: #fde8e8;
-            color: var(--error-color);
-            border: 1px solid #fcc;
-        }
-
-        .alert.success {
-            background-color: #d4edda;
-            color: var(--success-color);
-            border: 1px solid #c3e6cb;
-        }
-
-        /* Back to home link */
-        .back-link {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .back-link a {
-            color: #888;
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-
-        .back-link a:hover {
-            color: var(--primary-color);
-        }
-        .flash-message {
-            background-color: #d4edda;
-            color: red;
-            text-align: center;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            font-size: 0.9rem;
-            display: block;
-            border: 1px solid white; 
-        }
     </style>
-    </head>
+</head>
 <body>
+
+    <!-- <div class="auth-container">
+        <h2>Create an Account</h2>
+        <p class="subtitle">Join us today! It only takes a minute.</p> -->
 
     <div class="signup-container">
         <div class="logo">
@@ -215,8 +247,8 @@
             <p>Create your account</p>
         </div>
 
-        <!-- Error/Success Message -->
-         {% with messages = get_flashed_messages(with_categories=true) %}
+        <!-- Jinja2 Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
                     <div class="flash-message {{ category }}">
@@ -226,36 +258,7 @@
             {% endif %}
         {% endwith %}
 
-        <!-- <form action="/register" method="post" autocomplete="off">
-            <div class="form-group">
-                <label for="fullname">Full Name</label>
-                <input type="text" name="fullname" placeholder="Enter your full name" required>
-            </div>
-
-            <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" name="email" placeholder="Enter your email" required>
-            </div>
-
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" name="username" placeholder="Choose a username" required>
-            </div>
-
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" name="password" placeholder="Create a password" required minlength="6">
-                <div class="password-requirements">At least 6 characters</div>
-            </div>
-
-            <div class="form-group">
-                <label for="confirmPassword">Confirm Password</label>
-                <input type="password" name="confirmPassword" placeholder="Confirm your password" required>
-            </div>
-
-            <button type="submit" class="btn">Create Account</button>
-        </form> -->
-
+        <!-- The standard Email/Password Signup Form -->
         <form id="contact-form" action="{{ url_for('register') }}" method="POST" novalidate >
                 {{ form.hidden_tag() }}
                 <div class='form-group'>
@@ -263,7 +266,7 @@
                     {{form.fullname(class="form-control", placeholder="Your Full-Name")}}
                     {% if form.fullname.errors %}
                         {% for error in form.fullname.errors %}
-                            <span class="error"> {{error}}</span>
+                            <span class="error" style="color: red; font-size: 0.85rem;"> {{error}}</span>
                         {% endfor %}
                     {% endif %}
                 </div>
@@ -272,7 +275,7 @@
                     {{form.email(class="form-control", placeholder="Your Email")}}
                     {% if form.email.errors %}
                         {% for error in form.email.errors %}
-                            <span class="error"> {{error}}</span>
+                            <span class="error" style="color: red; font-size: 0.85rem;"> {{error}}</span>
                         {% endfor %}
                     {% endif %}
                 </div>
@@ -281,118 +284,62 @@
                     {{form.username(class="form-control", placeholder="Your Username")}}
                     {% if form.username.errors %}
                         {% for error in form.username.errors %}
-                            <span class="error"> {{error}}</span>
+                            <span class="error" style="color: red; font-size: 0.85rem;"> {{error}}</span>
                         {% endfor %}
                     {% endif %}
+                </div>
                     <div class='form-group'>
                     {{form.password.label}}<br>
                     {{form.password(class="form-control", placeholder="Your Password")}}
                     {% if form.password.errors %}
                         {% for error in form.password.errors %}
-                            <span class="error"> {{error}}</span>
+                            <span class="error" style="color: red; font-size: 0.85rem;"> {{error}}</span>
                         {% endfor %}
                     {% endif %}
+                    </div>
                     <div class='form-group'>
-                    {{form.confirmPassword.label}}<br>
-                    {{form.confirmPassword(class="form-control", placeholder="Confirm password")}}
-                    {% if form.confirmPassword.errors %}
-                        {% for error in form.confirmPassword.errors %}
-                            <span class="error"> {{error}}</span>
-                        {% endfor %}
-                    {% endif %}
-                </div>
-                {{ form.submit()}}
-            </form>
+        {{ form.confirmPassword.label }}<br>
+        {{ form.confirmPassword(class="form-control", placeholder="Confirm password") }}
+        {% if form.confirmPassword.errors %}
+            {% for error in form.confirmPassword.errors %}
+                <span class="error" style="color: red; font-size: 0.85rem;"> {{ error }}</span>
+            {% endfor %}
+        {% endif %}
+    </div>
+       <div class='form-group' style="margin-top: 25px; text-align: center;">
+       {{ form.submit(class="submit-btn") }}
+    </div>
+</form>
+        <!-- Divider -->
+        <div class="auth-divider">
+            <span>OR</span>
+        </div>
 
-        <div class="divider"><span>OR</span></div>
+        <!-- Social Signup Buttons -->
+        <div class="social-container">
+            <a href="/getIn/google" class="social-btn google-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20px" height="20px">
+                    <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
+                    <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
+                    <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
+                    <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+                </svg>
+                Sign up with Google
+            </a>
 
-        <p class="switch-link">
-            Already have an account? <a href="/login">Login here</a>
-        </p>
+            <a href="/getIn/facebook" class="social-btn facebook-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" width="20px" height="20px">
+                    <path fill="#ffffff" d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"/>
+                </svg>
+                Sign up with Facebook
+            </a>
+        </div>
 
-        <div class="back-link">
-            <a href="chat.html">← Back to Chat</a>
+        <!-- Login Redirect -->
+        <div class="auth-footer" style="text-align: center;">
+            Already have an account? <a href="/login">Log in here</a>
         </div>
     </div>
-    <!-- <script>
-        function handleSignup(event) {
-            event.preventDefault();
-            
-            // Get form values
-            const fullname = document.getElementById('fullname').value.trim();
-            const email = document.getElementById('email').value.trim().toLowerCase();
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            const alertEl = document.getElementById('alertMessage');
-
-            // Reset alert
-            alertEl.style.display = 'none';
-            alertEl.className = 'alert error';
-
-            // Validation
-            if (password !== confirmPassword) {
-                showAlert('Passwords do not match!');
-                return;
-            }
-
-            if (password.length < 6) {
-                showAlert('Password must be at least 6 characters!');
-                return;
-            }
-
-            if (fullname.length < 2) {
-                showAlert('Please enter your full name!');
-                return;
-            }
-
-            // Get existing users from localStorage
-            let users = JSON.parse(localStorage.getItem('users')) || [];
-
-            // Check if email already exists
-            if (users.find(u => u.email === email)) {
-                showAlert('Email is already registered!');
-                return;
-            }
-
-            // Check if username already exists
-            if (users.find(u => u.username === username)) {
-                showAlert('Username is already taken!');
-                return;
-            }
-
-            // Create new user object
-            const newUser = {
-                id: Date.now(),
-                fullname: fullname,
-                username: username,
-                email: email,
-                password: password,
-                createdAt: new Date().toISOString()
-            };
-
-            // Save user to localStorage
-            users.push(newUser);
-            localStorage.setItem('users', JSON.stringify(users));
-
-            // Success - Show success message and redirect
-            alertEl.textContent = 'Account created successfully! Redirecting to login...';
-            alertEl.className = 'alert success';
-            alertEl.style.display = 'block';
-
-            // Redirect to login after 1.5 seconds
-            setTimeout(() => {
-                window.location.href = 'login.html';
-            }, 1500);
-        }
-
-        function showAlert(message) {
-            const alertEl = document.getElementById('alertMessage');
-            alertEl.textContent = message;
-            alertEl.style.display = 'block';
-        }
-    </script> -->
 
 </body>
 </html>
-
