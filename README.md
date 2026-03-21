@@ -1,4 +1,4 @@
-# 🤖 Gemini AI Chat Application (Flask)
+# 🤖 MonoFlask AI Chat Application (Flask)
 
 A modern, responsive web-based chat application built with Python Flask and Google's latest **GenAI SDK**. This project features a clean, ChatGPT-style user interface, user session management (Login/Logout/Forgot Password), and seamless integration with Google's Gemini AI models (like `gemini-3.1-pro-preview` and `gemini-2.0-flash`).
 
