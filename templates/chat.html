@@ -222,10 +222,8 @@
     const chatMessages = document.getElementById('chatMessages');
  
     function addMessage(sender, text) {
-        // Create a single div matching your CSS structure
         const messageElement = document.createElement('div');
         
-        // Add the 'message' class, and either the 'user' or 'ai' class
         messageElement.classList.add('message', sender);
         messageElement.textContent = text;
 
@@ -248,7 +246,7 @@
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ message }) // Fixed syntax
+            body: JSON.stringify({ message }) 
         })
         .then(response => response.json())
         .then(data => {
@@ -268,7 +266,6 @@
         }
     });
     function logout() {
-    // make sure you want to logout
     const confirmLogout = confirm("Are you sure you want to log out?");
     
     if (confirmLogout) {
@@ -364,21 +361,5 @@
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        // Simple Mock AI Logic (Replace this with an API call later)
-        function getAIResponse(input) {
-            input = input.toLowerCase();
-            
-            if (input.includes("hello") || input.includes("hi")) {
-                return "Hello there! How can I assist you?";
-            } else if (input.includes("how are you")) {
-                return "I'm just a computer program, but thanks for asking!";
-            } else if (input.includes("html") || input.includes("code")) {
-                return "I can help with code! Here is a simple HTML example: <br><code>&lt;h1&gt;Hello World&lt;/h1&gt;</code>";
-            } else {
-                return "I'm a simple demo bot. In a real application, this would connect to an API like OpenAI or Claude.";
-            }
-        }
-    </script>
-
-</body>
+        </body>
 </html> -->
