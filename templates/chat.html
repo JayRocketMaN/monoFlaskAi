@@ -64,12 +64,12 @@
             border-radius: 50%;
             animation: pulse 2s infinite;
         }
-        /* Update your existing chat-header */
+      
 .chat-header {
     padding: 20px;
     border-bottom: 1px solid #eee;
     display: flex;
-    justify-content: space-between; /* Pushes logout button to the right */
+    justify-content: space-between; 
     align-items: center;
     background: #fff;
 }
@@ -240,7 +240,6 @@
         const message = userInput.value.trim();
         if (!message) return;
 
-        // FIXED: Order is now correctly (sender, text)
         addMessage('user', message);
         userInput.value = '';
 
@@ -262,7 +261,7 @@
         });
     }
 
-    // BONUS: Allow user to press "Enter" on their keyboard to send
+    //Allow user to press "Enter" on their keyboard to send
     document.getElementById('userInput').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             sendMessage();
