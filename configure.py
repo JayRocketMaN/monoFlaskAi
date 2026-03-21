@@ -5,17 +5,9 @@ import requests
 # User model and db setup:
 # from models import db, User 
 
-# app = Flask(__name__)
-# app.config['SECRET_KEY'] = 'your_super_secret_key' # Use a strong env variable in production!
 
-# # Initialize the serializer for secure token generation
-# serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
-
-# -------------------------------------------------------------
-# Brevo Email Helper Function
-# -------------------------------------------------------------
 def brevo_reset_email(email, reset_url):
-    api_key = os.getenv("BREVO_API_KEY") # Ensure you set this in your environment variables!
+    api_key = os.getenv("BREVO_API_KEY") 
     url = "https://api.brevo.com/v3/smtp/email"
     
     headers = {
