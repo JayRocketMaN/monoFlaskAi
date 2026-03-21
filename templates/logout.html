@@ -203,53 +203,6 @@
             window.location.href = '/login';
         }
     </script>
-
-    <!-- <script>
-        // Check URL parameters for auto-logout reason
-        const urlParams = new URLSearchParams(window.location.search);
-        const reason = urlParams.get('reason');
-
-        document.addEventListener('DOMContentLoaded', () => {
-            // Get current user
-            const currentUser = localStorage.getItem('currentUser') || sessionStorage.getItem('currentUser');
-            
-            if (currentUser) {
-                const user = JSON.parse(currentUser);
-                document.getElementById('userName').textContent = user.fullname || user.username || user.email;
-            } else {
-                // No user logged in, redirect to login
-                window.location.href = 'login.html';
-            }
-
-            // Check if this is an auto-logout (session expired)
-            if (reason === 'expired') {
-                document.getElementById('autoNotice').style.display = 'block';
-            }
-        });
-
-        function confirmLogout() {
-            // Show loading
-            document.getElementById('loadingOverlay').style.display = 'flex';
-
-            // Clear session
-            localStorage.removeItem('currentUser');
-            sessionStorage.removeItem('currentUser');
-
-            // Redirect after brief delay
-            setTimeout(() => {
-                window.location.href = 'login.html';
-            }, 1000);
-        }
-
-        
-
-        // Logout function to be called from other pages
-        function logoutUser() {
-            localStorage.removeItem('currentUser');
-            sessionStorage.removeItem('currentUser');
-            window.location.href = 'logout.html';
-        }
-    </script> -->
-
+  
 </body>
 </html>

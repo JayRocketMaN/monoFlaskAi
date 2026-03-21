@@ -121,34 +121,34 @@
 
         .submit-btn {
         width: 100%;
-        padding: 14px; /* Slightly thicker button gives the text room to breathe */
+        padding: 14px; 
         background-color: var(--primary-color);
         color: #ffffff;
         border: none;
         border-radius: 8px;
         
             /* --- Typography Beautification --- */
-            font-size: 1.05rem; /* Slightly larger text */
-            font-weight: 700; /* Extra bold text */
-            letter-spacing: 1px; /* Adds elegant space between the letters */
-            text-transform: uppercase; /* Makes it ALL CAPS for a strong call-to-action */
+            font-size: 1.05rem;
+            font-weight: 700; 
+            letter-spacing: 1px; 
+            text-transform: uppercase; 
             font-family: inherit;
-            /* -------------------------------- */
+            
             
             cursor: pointer;
-            transition: all 0.3s ease; /* Smooth transition for all effects */
+            transition: all 0.3s ease; 
             margin-top: 10px;
-            box-shadow: 0 4px 10px rgba(16, 163, 127, 0.25); /* Soft glowing green shadow */
+            box-shadow: 0 4px 10px rgba(16, 163, 127, 0.25); 
         }
 
-        /* Add a beautiful hover effect */
+        
         .submit-btn:hover {
             background-color: var(--primary-hover);
-            box-shadow: 0 6px 15px rgba(16, 163, 127, 0.4); /* Shadow grows on hover */
-            transform: translateY(-2px); /* Button physically lifts up slightly */
+            box-shadow: 0 6px 15px rgba(16, 163, 127, 0.4); 
+            transform: translateY(-2px); 
         }
 
-        /* A click effect so it feels responsive */
+        
         .submit-btn:active {
             transform: translateY(1px);
             box-shadow: 0 2px 5px rgba(16, 163, 127, 0.2);
@@ -237,10 +237,6 @@
 </head>
 <body>
 
-    <!-- <div class="auth-container">
-        <h2>Create an Account</h2>
-        <p class="subtitle">Join us today! It only takes a minute.</p> -->
-
     <div class="signup-container">
         <div class="logo">
             <h1>🤖 AI Chat</h1>
@@ -258,7 +254,7 @@
             {% endif %}
         {% endwith %}
 
-        <!-- The standard Email/Password Signup Form -->
+        <!--Email/Password Signup Form -->
         <form id="contact-form" action="{{ url_for('register') }}" method="POST" novalidate >
                 {{ form.hidden_tag() }}
                 <div class='form-group'>

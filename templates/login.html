@@ -175,49 +175,47 @@
             font-size: 0.9rem;
         }
 
-        /* This draws the two lines on the left and right */
+        
         .divider::before,
         .divider::after {
             content: '';
             flex: 1;
-            border-bottom: 1px solid #ddd; /* The color of the line */
+            border-bottom: 1px solid #ddd; 
         }
 
-        /* This adds breathing room around the word "OR" */
+        
         .divider span {
             padding: 0 15px;
         }
                 
       .submit-btn {
         width: 100%;
-        padding: 14px; /* Slightly thicker button gives the text room to breathe */
+        padding: 14px; 
         background-color: var(--primary-color);
         color: #ffffff;
         border: none;
         border-radius: 8px;
         
-            /* --- Typography Beautification --- */
-            font-size: 1.05rem; /* Slightly larger text */
-            font-weight: 700; /* Extra bold text */
-            letter-spacing: 1px; /* Adds elegant space between the letters */
-            text-transform: uppercase; /* Makes it ALL CAPS for a strong call-to-action */
-            font-family: inherit;
-            /* -------------------------------- */
             
+            font-size: 1.05rem; 
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase; 
+            font-family: inherit;
+                       
             cursor: pointer;
-            transition: all 0.3s ease; /* Smooth transition for all effects */
+            transition: all 0.3s ease; 
             margin-top: 10px;
-            box-shadow: 0 4px 10px rgba(16, 163, 127, 0.25); /* Soft glowing green shadow */
+            box-shadow: 0 4px 10px rgba(16, 163, 127, 0.25); 
         }
 
-        /* Add a beautiful hover effect */
-        .submit-btn:hover {
+           .submit-btn:hover {
             background-color: rgba(0, 128, 38, 0.667);
-            box-shadow: 0 6px 15px rgba(16, 163, 18, 0.169); /* Shadow grows on hover */
-            transform: translateY(-2px); /* Button physically lifts up slightly */
+            box-shadow: 0 6px 15px rgba(16, 163, 18, 0.169); 
+            transform: translateY(-2px);
         }
 
-        /* A click effect so it feels responsive */
+        
         .submit-btn:active {
             transform: translateY(1px);
             box-shadow: 0 2px 5px rgba(16, 163, 50, 0.352);
@@ -461,7 +459,6 @@
     </div>
     <script>
          function showForgotMessage() {
-            //alert('Please contact support to reset your password.\n\nThis is a demo feature.');
             window.location.href = '/forgotPassword';
         }
 
