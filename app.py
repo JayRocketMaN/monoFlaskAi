@@ -1,15 +1,17 @@
 from flask import Flask, render_template, request, redirect, flash, jsonify, session, url_for
 import os, re, requests
+from flask_login import LoginManager, login_user, login_required, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, EmailField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
 from dotenv import load_dotenv
 from launchGenai import generate 
+from extension import db
 from authlib.integrations.flask_client import OAuth
-from mongodb import mongoConnect
+from models import Users
 from itsdangerous import URLSafeTimedSerializer
 from configure import brevo_reset_email
-from werkzeug.security import generate_password_hash
+from flask_bcrypt import Bcrypt
 
 
 monoFlask = Flask(__name__)
@@ -19,12 +21,14 @@ monoFlask.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 monoFlask.config['CLIENT_ID'] = os.getenv('CLIENT_ID')
 monoFlask.config['CLIENT_SECRET'] = os.getenv('CLIENT_SECRET')
 monoFlask.config['BREVO_API_KEY'] = os.getenv('BREVO_API_KEY')
+monoFlask.config["MONGO_URI"] = os.getenv('MONGO_URI')
+monoFlask.config['MONGODB_SETTINGS'] = {'host': os.getenv('MONGO_URI')}
+bcrypt = Bcrypt(monoFlask)
+db.init_app(monoFlask)
 # Initialize OAuth
 oauth = OAuth(monoFlask)
-
 # Required for testing OAuth locally over HTTP (Remove this in production!)
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
-
 # Register Google OAuth
 google = oauth.register(
     name='google',
@@ -49,7 +53,19 @@ facebook = oauth.register(
     client_kwargs={'scope': 'email public_profile'},
 )
 
+# Initialize LoginManager
+login_manager = LoginManager()
+login_manager.init_app(monoFlask)
+login_manager.login_view = 'submit'
+login_manager.login_message = "Please log in to access this page."
+login_manager.login_message_category = "info"
+# load user
+@login_manager.user_loader
+def load_user(user_id):
+    return Users.objects(id=user_id).first()
+
 @monoFlask.route('/')
+@login_required
 def chat():
     return render_template('chat.html')
 
@@ -147,9 +163,14 @@ def register():
             username = form.username.data
             password = form.password.data
             confirmPassword = form.confirmPassword.data
+            #save user to mongoDB
+            new_user= Users(fullname=fullname, email=email, username=username)
+            new_user.set_password(password) 
+            new_user.save()
             flash(f'Account created for {username}, Login to Chat!', 'success')
             return redirect('/signup')
         except Exception as e:
+             flash(f'Account creation failed, Try again!', 'error')
              print(f'--error: {str(e)}')
     
     return render_template('signup.html', form=form)
@@ -161,7 +182,12 @@ def submit():
             try:
                 email = form.email.data
                 password = form.password.data
-                return redirect('/')
+                user = Users.objects(email = email).first()
+                if user and user.check_password(password):
+                    login_user(user)
+                    return redirect('/')
+                else:
+                    flash(f'Either the Email or Password is invalid, Try again!', 'error')
             except Exception as e:
                 print(f'--python error: {str(e)}')
 
@@ -202,13 +228,13 @@ def reset_request():
         #Create absolute URL for the reset link
         reset_url = url_for('reset_token', token=token, _external=True)
             
-           # 4. Send via Brevo
+           #Send via Brevo
         if brevo_reset_email(email, reset_url):
                  flash('If an account exists with that email, a reset link has been sent.', 'success')
                      
         else:
              flash('There was an issue sending the email. Please try again later.', 'error')
-        return redirect(url_for('forgotPassword')) # Redirect back to resetPassword
+        return redirect(url_for('forgotPassword')) # Redirect back to resetPasswordHtml
         
     return render_template('forgotPassword.html') 
 
@@ -217,29 +243,26 @@ def reset_token(token):
     form = ResetPasswordForm()
     serializer = URLSafeTimedSerializer(monoFlask.config['SECRET_KEY'])
     try:
-        # Verify token. max_age=900 means it expires in 15 minutes (900 seconds)
+        password = form.password.data
+        #Verify token to expire in 15 minutes (900 seconds)
         email = serializer.loads(token, salt='password-reset-salt', max_age=900)
     except:
         flash('The password reset link is invalid or has expired.', 'error')
         return redirect(url_for('reset_request'))
     
     if form.validate_on_submit():
+        user = Users.objects(email=email).first()
+        if user:
+            user.set_password(password)
+            user.save()
+            flash('Your password has been updated! You can now log in.', 'success')
+            return redirect(url_for('login'))
+        else:
+            flash('User not found.', 'error')
         
-       # Update user in DB
-       # hashed_password = generate_password_hash(new_password)
-        # user = User.query.filter_by(email=email).first()
-        # user.password = hashed_password
-        # db.session.commit()
+        return redirect(url_for('login'))        
+    return render_template('resetPassword.html', form=form, token=token)#ResetPasswordForm
         
-        flash('Your password has been updated! You can now log in.', 'success')
-        return redirect(url_for('login'))
-        
-    # the "Enter New Password" form
-    return render_template('resetPassword.html', form=form, token=token) 
-        
-# print('testing mongodb')
-# mongoConnect()
-
 if __name__ == '__main__':
     monoFlask.run(debug= True, host="0.0.0.0",port=8090)
     
