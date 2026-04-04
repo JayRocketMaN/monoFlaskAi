@@ -1,9 +1,8 @@
 from flask import Flask, render_template, request, redirect, flash, jsonify, session, url_for
 import os, re, requests
-from flask_login import LoginManager, login_user, login_required, current_user
+from flask_login import LoginManager, login_user, login_required, logout_user
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, EmailField, SubmitField
-from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
+from forms import RegistrationForm, LoginForm, ResetPasswordForm
 from dotenv import load_dotenv
 from launchGenai import generate 
 from extension import db
@@ -22,13 +21,14 @@ monoFlask.config['CLIENT_ID'] = os.getenv('CLIENT_ID')
 monoFlask.config['CLIENT_SECRET'] = os.getenv('CLIENT_SECRET')
 monoFlask.config['BREVO_API_KEY'] = os.getenv('BREVO_API_KEY')
 monoFlask.config["MONGO_URI"] = os.getenv('MONGO_URI')
+monoFlask.config["FLASK_DEBUG"] = os.getenv('FLASK_DEBUG')
 monoFlask.config['MONGODB_SETTINGS'] = {'host': os.getenv('MONGO_URI')}
 bcrypt = Bcrypt(monoFlask)
 db.init_app(monoFlask)
 # Initialize OAuth
 oauth = OAuth(monoFlask)
 # Required for testing OAuth locally over HTTP (Remove this in production!)
-os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = os.getenv('OAUTHLIB_INSECURE_TRANSPORT')
 # Register Google OAuth
 google = oauth.register(
     name='google',
@@ -71,7 +71,7 @@ def chat():
 
 @monoFlask.route('/signup')
 def signup():
-    form = RegisterationForm()
+    form = RegistrationForm()
     return render_template('signup.html', form=form)
 
 @monoFlask.route('/login')
@@ -90,72 +90,69 @@ def resetPassword():
 
 
 @monoFlask.route('/logout')
+@login_required
 def logout():
+    logout_user()
     session.pop('user', None)
     #session.clear()
     return render_template('logout.html')
 
 
+
 @monoFlask.route('/getIn/<source>')
 def getIn(source):
-    if source == 'google':
-        redirect_uri = url_for('auth', source='google', _external=True)
-        return oauth.google.authorize_redirect(redirect_uri)
-    elif source  == 'facebook':
-        redirect_uri = url_for('auth', source='facebook', _external=True)
-        return oauth.facebook.authorize_redirect(redirect_uri)
+    client = getattr(oauth, source, None)
+    if client:
+        redirect_uri = url_for('auth', source=source, _external=True)
+        return client.authorize_redirect(redirect_uri)
     return "Provider not supported", 404
 
 @monoFlask.route('/auth/<source>')
 def auth(source):
+    #fetch user info from the provider
+    client = getattr(oauth, source, None)
+    if not client:
+        return "Invalid provider", 404
+    # get token from Google/Facebook
+    token = client.authorize_access_token()
+    
     if source == 'google':
-        token = oauth.google.authorize_access_token()
-        # Google returns user info inside the token if openid is used
-        user = token.get('userinfo')
-        
-    elif source == 'facebook':
-        token = oauth.facebook.authorize_access_token()
-        # Fetch user details using the access token
-        resp = oauth.facebook.get('me?fields=id,name,email,picture')
-        user = resp.json()
+        user_data = token.get('userinfo')
+    else:
+        #for Facebook a manual profile fetch
+        resp = client.get('me?fields=id,name,email')
+        user_data = resp.json()
 
-    if user:
-        # Save user info in the session
-        session['user'] = user
+    if user_data:
+        #check if the email is verified
+        if not user_data.get('email_verified', True):
+            return "Email not verified by provider", 400
         
-    return redirect(url_for('chat'))   
+        #check for user in MongoDB
+        user = Users.objects(email=user_data['email']).first()
+        
+        if not user:
+            # create new user if user don't exist
+            user = Users(
+                fullname=user_data.get('name'),
+                email=user_data['email'],
+                username=user_data['email'].split('@')[0]
+            )
+            #password placeholder
+            user.password_hash = "oauth_user" 
+            user.save()
+        
+        #session logic
+        login_user(user)        
+        return redirect(url_for('chat'))
+
+    return "Authentication failed", 401
+
                 
-def passwordCustom(form, field):
-    regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]') 
-    password = field.data
-    if not any(char.isdigit() for char in password):
-          raise ValidationError('Password must contain at least a digit')
-    if not any(char.isalpha() for char in password):
-        raise ValidationError('Password must contain at least an alphabet')
-    if len(password) < 8:
-         raise ValidationError('Password must be more than 8 character')
-    if(regex.search(password) == None):
-         raise ValidationError('Password must contain a special character')
-class RegisterationForm(FlaskForm):
-        fullname = StringField('fullname', validators=[DataRequired()])
-        email = EmailField('Email', validators=[DataRequired(), Email()])
-        username = StringField('username', validators=[DataRequired()])
-        password = PasswordField('password', validators=[DataRequired(), passwordCustom])
-        confirmPassword = PasswordField('confirmpassword', validators=[DataRequired(), EqualTo('password', message='password does not match')])
-        submit = SubmitField('CREATE ACCOUNT')
-class LoginForm(FlaskForm):
-     email = EmailField('Email', validators=[DataRequired(), Email()])
-     password = PasswordField('password', validators=[DataRequired(), passwordCustom]) 
-     submit = SubmitField('LOGIN') 
-
-class ResetPasswordForm(FlaskForm):
-        password = PasswordField('password', validators=[DataRequired(), passwordCustom])
-        confirmPassword = PasswordField('confirmpassword', validators=[DataRequired(), EqualTo('password', message='password does not match')])
-        submit = SubmitField('UPDATE PASSWORD')
 
 @monoFlask.route('/register', methods=['POST'])
 def register():
-    form = RegisterationForm()
+    form = RegistrationForm()
     if form.validate_on_submit():
         try:
             fullname = form.fullname.data
@@ -178,38 +175,23 @@ def register():
 @monoFlask.route("/submit" , methods=['POST'])
 def submit():
     form = LoginForm()
-    if form.validate_on_submit():
-            try:
-                email = form.email.data
-                password = form.password.data
-                user = Users.objects(email = email).first()
-                if user and user.check_password(password):
-                    login_user(user)
-                    return redirect('/')
-                else:
-                    flash(f'Either the Email or Password is invalid, Try again!', 'error')
-            except Exception as e:
-                print(f'--python error: {str(e)}')
+    try:
+        email = form.email.data
+        password = form.password.data
+        user = Users.objects(email = email).first()
+        if user and user.check_password(password):
+             login_user(user)
+             return redirect('/')
+        else:
+            flash(f'Either the Email or Password is invalid, Try again!', 'error')
+    except Exception as e:
+            print(f'--python error: {str(e)}')
 
     return render_template('login.html', form=form)
-
-# def submit(value, field, form):
-#     value = ['bucon', 'true']
-#     form = LoginForm()
-
-#     if field.Password in value:
-#         raise ValidationError('password is not correct')
-#     print (ValidationError)
-#     flash ('incorrect password')
-#     return redirect('/')
-# def submit():
-#     form = LoginForm()
-#     if form.validate_on_submit():
-#         return redirect('/')
-#     return render_template('login.html', form=form)
-    
+ 
     
 @monoFlask.route('/response', methods=['POST'])
+@login_required
 def AiResponse():
     userInput = request.json.get('message')
     final_response = generate(userInput)
@@ -221,36 +203,40 @@ def reset_request():
     if request.method == 'POST':
         email = request.form.get('email')
 
-        #Generate token
-        serializer = URLSafeTimedSerializer(monoFlask.config['SECRET_KEY'])
-        token = serializer.dumps(email, salt='password-reset-salt')
-        
-        #Create absolute URL for the reset link
-        reset_url = url_for('reset_token', token=token, _external=True)
-            
-           #Send via Brevo
-        if brevo_reset_email(email, reset_url):
-                 flash('If an account exists with that email, a reset link has been sent.', 'success')
-                     
+        user = Users.objects(email=email).first()
+        if user:
+            #Generate token
+            serializer = URLSafeTimedSerializer(monoFlask.config['SECRET_KEY'])
+            token = serializer.dumps(email, salt='password-reset-salt')
+       
+            #Create absolute URL for the reset link
+            reset_url = url_for('reset_token', token=token, _external=True)
+                            
+            #Send via Brevo
+            if brevo_reset_email(email, reset_url):
+                flash('If an account exists with that email, a reset link has been sent.', 'success')
+                                
+            else:
+                flash('There was an issue sending the email. Please try again later.', 'error')
+                return redirect(url_for('forgotPassword')) # Redirect back to resetPasswordHtml
         else:
-             flash('There was an issue sending the email. Please try again later.', 'error')
-        return redirect(url_for('forgotPassword')) # Redirect back to resetPasswordHtml
-        
+            flash('the email does not exist', 'error')    
     return render_template('forgotPassword.html') 
 
 @monoFlask.route('/reset_token/<token>', methods=['GET','POST'])
 def reset_token(token):
     form = ResetPasswordForm()
     serializer = URLSafeTimedSerializer(monoFlask.config['SECRET_KEY'])
-    try:
-        password = form.password.data
-        #Verify token to expire in 15 minutes (900 seconds)
-        email = serializer.loads(token, salt='password-reset-salt', max_age=900)
-    except:
-        flash('The password reset link is invalid or has expired.', 'error')
-        return redirect(url_for('reset_request'))
-    
     if form.validate_on_submit():
+        try:
+            #Verify token to expire in 15 minutes (900 seconds)
+            email = serializer.loads(token, salt='password-reset-salt', max_age=900)
+            password = form.password.data
+        except:
+            flash('The password reset link is invalid or has expired.', 'error')
+            return redirect(url_for('reset_request'))
+        
+        #check for user
         user = Users.objects(email=email).first()
         if user:
             user.set_password(password)
@@ -264,6 +250,6 @@ def reset_token(token):
     return render_template('resetPassword.html', form=form, token=token)#ResetPasswordForm
         
 if __name__ == '__main__':
-    monoFlask.run(debug= True, host="0.0.0.0",port=8090)
+    monoFlask.run(debug=os.getenv('FLASK_DEBUG', 'False') == 'True')
     
     

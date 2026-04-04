@@ -23,3 +23,14 @@ Before you begin, ensure you have the following installed:
 ```bash
 git clone https://github.com/yourusername/your-repo-name.git
 cd your-repo-name
+
+##  Requirements
+This already exists in the requirements.txt file. This was used to save the package requirement into the file "pip freeze > requirements.txt"
+
+After downloading project to your PC, use this command below to setup the project.
+
+python -m venv venv
+Venv\Scripts\Activate (on windows only)
+source venv/bin/activate (on mac only)
+pip install -r requirements.txt
+External API calls Blueprint Caching email service database background queues
