@@ -159,6 +159,6 @@ def email_auth(source):
             
             #session logic
             login_user(user)        
-            return redirect(url_for('chat'))
+            return redirect(url_for('user.chat'))
 
         return "Authentication failed", 401
