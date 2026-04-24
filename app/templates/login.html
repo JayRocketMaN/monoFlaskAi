@@ -301,6 +301,16 @@
             color: var(--error-color);
             border: 1px solid #fcc;
         }
+        .flash-message.danger {
+            color: #a94442;
+            background-color: #f2dede;
+            border: 1px solid #ebccd1;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
 
         /* Back to home link */
         .back-link {
@@ -366,7 +376,7 @@
         <!-- Error/Success Message -->
          {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                {% for category, message in messages %}
+                {% for category, message in (messages | unique) %}
                     <div class="flash-message {{ category }}">
                         {{ message }}
                     </div>
@@ -374,7 +384,7 @@
             {% endif %}
         {% endwith %}
 
-        <form id="contact-form" action="{{ url_for('submit') }}" method="POST" novalidate >
+        <form id="contact-form" action="{{ url_for('auth.submit') }}" method="POST" novalidate >
                 {{ form.hidden_tag() }}
                 <div class='form-group'>
                     {{form.email.label}}<br>
@@ -423,7 +433,7 @@
              <!-- <a href="/getIn/google" class="btn google-btn">Sign in with Google</a>
              <a href="/getIn/facebook" class="btn facebook-btn">Sign in with Facebook</a> -->
              <!-- Google Button with SVG Icon -->
-            <a href="/getIn/google" class="btn google-btn">
+            <a href="/auth/getIn/google" class="btn google-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
                     <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
                     <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
@@ -434,7 +444,7 @@
             </a>
 
             <!-- Facebook Button with SVG Icon -->
-            <a href="/getIn/facebook" class="btn facebook-btn">
+            <a href="/auth/getIn/facebook" class="btn facebook-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
                     <path fill="#ffffff" d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"/>
                 </svg>
