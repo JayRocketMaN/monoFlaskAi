@@ -1,5 +1,7 @@
 # Environment variables (sensitive)
 .env
+gemini.py
+mongodb.py
 
 # Python
 __pycache__/

@@ -3,10 +3,9 @@ from google.genai import types
 from dotenv import load_dotenv
 
 load_dotenv()
+client = genai.Client()
 
 def generate(message):
-    client = genai.Client()
-
     chat = client.chats.create(
         model="gemini-3.1-pro-preview",
         config=types.GenerateContentConfig(
@@ -22,8 +21,8 @@ def generate(message):
             response = chat.send_message(message)
             return (response.text)
     except Exception as e:
-           print(f"GEMINI ERROR: {str(e)}, {response.status_code} - {response.text}") 
-           return("this service is currently unavailable")
+           print(f"GEMINI ERROR: {str(e)}") 
+           return("this service is currently unavailable, Please try again later")
 
 if __name__ == "__main__":
 

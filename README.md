@@ -34,3 +34,37 @@ Venv\Scripts\Activate (on windows only)
 source venv/bin/activate (on mac only)
 pip install -r requirements.txt
 External API calls Blueprint Caching email service database background queues
+
+## File Structure
+monoFlask/
+├── main.py                      # App entry point
+├── requirements.txt
+│
+├── app/
+│   ├── __init__.py             # Application factory
+│   │
+│   ├── forms/                    # Flask Forms
+│   │   ├──__init__.py               
+│   │   ├── allForms.py           # Register, login, custom password, password reset
+│   │
+│   │
+│   ├── models/                 # MongoDB models
+│   │   ├── __init__.py  
+│   │   ├── allModels.py
+│   │
+│   ├── routes/                # auth and user routes blueprints
+│   │   ├── auth
+│   │   └── user
+│   │
+│   ├── templates/             # all html pages
+│   │   
+│   │
+│   ├── config/                 # all apps configuration
+│   │             
+│   │
+├   ├── extension/               # Apps extension
+│   |              
+|   ├── launchGenai/             # gemini config
+│                        
+│
+└── 
