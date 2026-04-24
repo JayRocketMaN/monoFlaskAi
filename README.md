@@ -8,6 +8,8 @@ A modern, responsive web-based chat application built with Python Flask and Goog
 - **Google GenAI Integration:** Uses the official `google-genai` Python SDK for robust text generation and conversational memory.
 - **Asynchronous Chat:** Uses JavaScript `fetch()` API to send and receive messages without reloading the page.
 - **Authentication Pages:** Includes a beautiful Login and "Forgot Password" page with Flask flash messages for user feedback.
+- **Multi-Chat Session Management:** Users can now create, switch between, and persist multiple active chat threads in the sidebar.
+- **Permanent Database Deletion:** Added targeted removal mechanics to scrub specific conversations from storage directly through the UI.
 - **Session Management:** Secure Logout functionality that clears user sessions and redirects to the login screen.
 - **Environment Security:** Uses `python-dotenv` to securely manage the Gemini API key.
 
