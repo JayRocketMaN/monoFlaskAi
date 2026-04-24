@@ -63,6 +63,8 @@ class Config():
     CLIENT_SECRET = os.getenv('CLIENT_SECRET')
     BREVO_API_KEY = os.getenv('BREVO_API_KEY')
     MONGO_URI = os.getenv('MONGO_URI')
+    HOST = os.getenv('HOST')
+    PORT = int(os.getenv('PORT', 8000))  
     FLASK_DEBUG = os.getenv('FLASK_DEBUG')
     MONGODB_SETTINGS = {
         'host': os.getenv('MONGO_URI'),

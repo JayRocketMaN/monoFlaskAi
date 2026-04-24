@@ -20,8 +20,6 @@ def create_app():
     oauth.init_app(app)
   
    
-    # Required for testing OAuth locally over HTTP (Remove this in production!)
-    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = os.getenv('OAUTHLIB_INSECURE_TRANSPORT')
     # Register Google OAuth
     google = oauth.register(
         name='google',
