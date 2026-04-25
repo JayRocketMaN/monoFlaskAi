@@ -75,7 +75,7 @@ def reset_request():
             token = serializer.dumps(email, salt='password-reset-salt')
        
             #Create absolute URL for the reset link
-            reset_url = url_for('reset_token', token=token, _external=True)
+            reset_url = url_for('auth.reset_token', token=token, _external=True)
                             
             #Send via Brevo
             if brevo_reset_email(email, reset_url):
@@ -99,7 +99,7 @@ def reset_token(token):
             password = form.password.data
         except:
             flash('The password reset link is invalid or has expired.', 'error')
-            return redirect(url_for('reset_request'))
+            return redirect(url_for('auth.reset_request'))
         
         #check for user
         user = Users.objects(email=email).first()

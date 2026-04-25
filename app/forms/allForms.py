@@ -4,7 +4,7 @@ from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
 import re
 
 def passwordCustom(form, field):
-    regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]') 
+    regex = re.compile('[@_!#$%^&*()<>?/\\|}{~:]') 
     password = field.data
     if not any(char.isdigit() for char in password):
           raise ValidationError('Password must contain at least a digit')

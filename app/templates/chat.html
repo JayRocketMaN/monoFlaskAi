@@ -146,7 +146,33 @@
     opacity: 1 !important;
     color: #ff4757; /* Turns red on hover */
 }
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        left: -280px; /* Hide off-screen */
+        z-index: 1000;
+        height: 100%;
+        transition: 0.3s;
+    }
 
+    .sidebar.active {
+        left: 0; /* Slide in when active */
+    }
+
+    .menu-toggle {
+        display: block !important;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+}
+
+/* Hide toggle on desktop */
+.menu-toggle {
+    display: none;
+}
 </style>
 </head>
 <body>
@@ -180,13 +206,15 @@
 
         <!-- ORIGINAL CHAT CONTAINER -->
         <div class="chat-container">
-            <div class="chat-header">
+                <div class="chat-header">
                 <div class="header-left">
+                    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
                     <div class="status-dot"></div>
                     <h2>{{ active_session.title if active_session else "AI ChatBox" }}</h2>
                 </div>
                 <button class="logout-btn" onclick="logout()">Logout</button>
             </div>
+
             
             <div class="chat-messages" id="chatMessages">
                 {% if active_session and active_session.messages %}
@@ -292,7 +320,17 @@
         }
     });
     const indicator = document.getElementById('typing-indicator');
- 
+   
+    function toggleSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+        sidebar.classList.toggle('active');
+    }
+
+    // Close sidebar when clicking messages on mobile
+    document.getElementById('chatMessages').addEventListener('click', () => {
+        document.querySelector('.sidebar').classList.remove('active');
+    });
+
 
     function logout() {
     const confirmLogout = confirm("Are you sure you want to log out?");
