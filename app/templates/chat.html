@@ -171,8 +171,37 @@
 
 /* Hide toggle on desktop */
 .menu-toggle {
-    display: none;
+    display: none; /* Keep hidden on desktop */
+    align-items: center;
+    gap: 8px;
+    background: #f0f2f5;
+    border: 1px solid #ddd;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-right: 10px;
 }
+
+.menu-icon {
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+.menu-text {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Ensure it shows up on mobile */
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: flex; 
+    }
+}
+
 </style>
 </head>
 <body>
@@ -208,12 +237,18 @@
         <div class="chat-container">
                 <div class="chat-header">
                 <div class="header-left">
-                    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+                    <!-- New obvious button with label -->
+                    <button class="menu-toggle" onclick="toggleSidebar()">
+                        <span class="menu-icon">☰</span>
+                        <span class="menu-text">History</span>
+                    </button>
+                    
                     <div class="status-dot"></div>
                     <h2>{{ active_session.title if active_session else "AI ChatBox" }}</h2>
                 </div>
                 <button class="logout-btn" onclick="logout()">Logout</button>
             </div>
+
 
             
             <div class="chat-messages" id="chatMessages">
