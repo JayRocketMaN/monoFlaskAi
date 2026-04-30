@@ -295,11 +295,11 @@
         
         if (sender === 'ai') {
         
-        let formattedText = text
-            .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>') // to **Bold**
-            .replace(/\n/g, '<br>');               // for Line Breaks
+            let formattedText = text
+                .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>') // to **Bold**
+                .replace(/\n/g, '<br>');               // for Line Breaks
         
-        messageElement.innerHTML = formattedText;
+            messageElement.innerHTML = formattedText;
     } else {
         messageElement.textContent = text;
     }
